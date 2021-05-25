@@ -1,0 +1,22 @@
+[package]
+name = "liepy"
+version = "0.1.0"
+authors = ["RustyBamboo <d@volya.xyz>"]
+edition = "2018"
+
+[lib]
+name = "liepy"
+crate-type = ["cdylib"]
+
+[dependencies]
+
+num-complex = "0.3"
+approx = {version = "0.3.2", features = ["num-complex"]}
+ndarray = {version = "0.13", features = ["approx"]}
+ndarray-linalg = { version = "0.12", features = ["openblas-static"] }
+
+
+lie = {path = "../"}
+
+numpy = "0.13"
+pyo3 = {version = "0.13", features = ["extension-module", "hashbrown", "num-complex"]}
