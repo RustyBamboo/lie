@@ -22,12 +22,10 @@ pub fn gellmann(j: usize, k: usize, d: usize) -> nd::Array2<Complex64> {
             let n = n + 1;
             if n <= j {
                 r1
+            } else if n == (j + 1) {
+                Complex64::new(-(j as f64), 0.)
             } else {
-                if n == (j + 1) {
-                    Complex64::new(-(j as f64), 0.)
-                } else {
-                    Complex64::new(0., 0.)
-                }
+                Complex64::new(0., 0.)
             }
         };
         let diag = nd::Array1::from_shape_fn(d, f);

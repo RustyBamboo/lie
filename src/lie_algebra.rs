@@ -19,7 +19,7 @@ use itertools::Itertools;
 /// $f_{abc}$. If $f_{abc} = 0$ then the HashMap will not have an entry.
 ///
 pub fn find_structure_constants(
-    basis: &Vec<nd::Array2<c64>>,
+    basis: &[nd::Array2<c64>],
 ) -> HashMap<(usize, usize), (usize, c64)> {
     use approx::AbsDiffEq;
     use std::iter::FromIterator;
@@ -29,7 +29,6 @@ pub fn find_structure_constants(
 
     let commutator = |x: &nd::Array2<c64>, y: &nd::Array2<c64>| x.dot(y) - y.dot(x);
 
-
     // Rewrite the basis as a matrix with each su(n) element mapped to a column
     // This then defines the matrix A in Ax=b
     let matrix: Vec<_> = basis
@@ -37,8 +36,6 @@ pub fn find_structure_constants(
         .map(|x| nd::ArrayView::from_shape(n, x.as_slice().unwrap()).unwrap())
         .collect();
     let matrix = nd::stack(nd::Axis(1), matrix.as_slice()).unwrap();
-
-
 
     // HashMap to store the strucure constants
     let mut struct_consts = HashMap::new();
@@ -59,15 +56,13 @@ pub fn find_structure_constants(
             let x = matrix.least_squares(&f_t_c).unwrap();
             let x = x.solution;
 
-            let idx = x
-                .iter()
-                .map(|x| x.abs_diff_ne(&c64::new(0., 0.), 1e-8));
+            let idx = x.iter().map(|x| x.abs_diff_ne(&c64::new(0., 0.), 1e-8));
 
-            if idx.clone().filter(|x| *x == true).count() > 1usize {
+            if idx.clone().filter(|x| *x).count() > 1usize {
                 assert!(true, "This algebra does not satisfiey the lie algebra");
             }
 
-            let idx = idx.into_iter().position(|x| x == true);
+            let idx = idx.into_iter().position(|x| x);
 
             if let Some(idx) = idx {
                 struct_consts.insert((i, j), (idx, x[idx]));
@@ -78,17 +73,14 @@ pub fn find_structure_constants(
     struct_consts
 }
 
-pub fn find_d_coefficients(
-    basis: &Vec<nd::Array2<c64>>,
-) -> HashMap<(usize, usize, usize), c64> {
+pub fn find_d_coefficients(basis: &[nd::Array2<c64>]) -> HashMap<(usize, usize, usize), c64> {
     use approx::AbsDiffEq;
     use std::iter::FromIterator;
 
     let n_dim = basis[0].shape()[0];
     let n = n_dim * n_dim;
 
-    let anti_commutator =
-        |x: &nd::Array2<c64>, y: &nd::Array2<c64>| x.dot(y) + y.dot(x);
+    let anti_commutator = |x: &nd::Array2<c64>, y: &nd::Array2<c64>| x.dot(y) + y.dot(x);
 
     let eye: nd::Array2<c64> = nd::Array2::eye(n_dim);
 
@@ -118,12 +110,10 @@ pub fn find_d_coefficients(
             let x = matrix.least_squares(&f_t_c).unwrap();
             let x = x.solution;
 
-            let idx = x
-                .iter()
-                .map(|x| x.abs_diff_ne(&c64::new(0., 0.), 1e-8));
+            let idx = x.iter().map(|x| x.abs_diff_ne(&c64::new(0., 0.), 1e-8));
 
             for (c, val) in idx.clone().into_iter().enumerate() {
-                if val == true {
+                if val {
                     struct_consts.insert((i, j, c), x[c] / c64::new(2., 0.));
                 }
             }
@@ -147,7 +137,7 @@ pub fn su_commutator(
     l_a: &ndarray::Array2<c64>,
     l_b: &ndarray::Array2<c64>,
     f_ijk: &HashMap<(usize, usize), (usize, c64)>,
-    basis: &Vec<nd::Array2<c64>>,
+    basis: &[nd::Array2<c64>],
 ) -> nd::Array2<c64> {
     let n_dim = basis[0].shape()[0];
     let mut res: nd::Array2<c64> = nd::Array2::zeros((n_dim, n_dim));

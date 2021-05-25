@@ -2,14 +2,12 @@ use ndarray as nd;
 
 /// Helper for create raising operator elements
 fn c_p(j: f64, m: &nd::Array1<f64>) -> nd::Array1<f64> {
-    let x = ((j - m) * (m + j + 1.)).mapv(f64::sqrt);
-    x
+    ((j - m) * (m + j + 1.)).mapv(f64::sqrt)
 }
 
 /// Helper for create lowering operator elements
 fn c_m(j: f64, m: &nd::Array1<f64>) -> nd::Array1<f64> {
-    let x = ((m + j) * (-m + j + 1.)).mapv(f64::sqrt);
-    x
+    ((m + j) * (-m + j + 1.)).mapv(f64::sqrt)
 }
 
 /// Create a raising matrix for a spin j

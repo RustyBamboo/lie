@@ -18,7 +18,7 @@ mod tests {
     fn test_sylv() {
         use crate::sylvester::*;
 
-        let x = gen_sylvester(3);
+        let _x = gen_sylvester(3);
     }
 
     #[test]

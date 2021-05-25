@@ -10,10 +10,10 @@ crate-type = ["cdylib"]
 
 [dependencies]
 
-num-complex = "0.3"
-approx = {version = "0.3.2", features = ["num-complex"]}
-ndarray = {version = "0.13", features = ["approx"]}
-ndarray-linalg = { version = "0.12", features = ["openblas-static"] }
+num-complex = "0.3.1"
+approx = {version = "0.4.0", features = ["num-complex"]}
+ndarray = {version = "0.14.0", features = ["approx"]}
+ndarray-linalg = { version = "0.13.1", features = ["openblas"] }
 
 
 lie = {path = "../"}

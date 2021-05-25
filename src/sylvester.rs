@@ -45,5 +45,5 @@ pub fn gen_sylvester(d: usize) -> Vec<nd::Array2<Complex64>> {
         x_i = x_i.dot(&x);
     }
 
-    return basis;
+    basis
 }

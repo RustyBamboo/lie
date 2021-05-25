@@ -8,24 +8,22 @@ pub fn c_g_p(r: i32, u: i32) -> f64 {
     let r = r as f64;
     let u = u as f64;
     let x: f64 = (((1. + r + u) * (2. + r + u)) / ((1. + r) * (1. + 2. * r))).sqrt();
-    return x / 2f64.sqrt();
+    x / 2f64.sqrt()
 }
 
 pub fn c_g_z(r: i32, u: i32) -> f64 {
     let r = r as f64;
     let u = u as f64;
-    let x = (((1. + r - u) * (1. + r + u)) / ((1. + r) * (1. + 2. * r))).sqrt();
-    return x;
+    (((1. + r - u) * (1. + r + u)) / ((1. + r) * (1. + 2. * r))).sqrt()
 }
 
 pub fn c_g_n(r: i32, u: i32) -> f64 {
     let r = r as f64;
     let u = u as f64;
-    let x = f64::sqrt(
+    f64::sqrt(
         (2. + 3. * r + f64::powf(r, 2.) - 3. * u - 2. * r * u + f64::powf(u, 2.))
             / (2. + 6. * r + 4. * f64::powf(r, 2.)),
-    );
-    return x;
+    )
 }
 
 pub fn c_g(r: i32, u: i32, la: i32) -> f64 {
@@ -56,7 +54,7 @@ pub fn q_r_u(j: f64, r: i32, u: i32) -> nd::Array2<f64> {
         let mut mat: nd::Array2<f64> = nd::Array2::zeros((n, n));
 
         for i in (-1 + u)..=(u + 1) {
-            if i.abs() <= r - 1 {
+            if i.abs() < r {
                 let q1u = q_1_u(j, -i + u);
                 mat = mat + c_g(r - 1, i, -i + u) * q_r_u(j, r - 1, i).dot(&q1u);
             }
@@ -111,5 +109,5 @@ pub fn hermitian_basis_from_spin(j: f64) -> Vec<nd::Array2<Complex64>> {
         }
         i += 2 * r + 1;
     }
-    return herm_basis;
+    herm_basis
 }
