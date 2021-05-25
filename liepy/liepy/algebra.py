@@ -1,7 +1,7 @@
 #!python
 
 import numpy as np
-from .su_genpy import *
+from .liepy import *
 from scipy.linalg import expm, logm
 
 class Algebra_su(object):

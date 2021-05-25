@@ -1,6 +1,6 @@
 #!python
 import numpy as np
-import su_genpy as su
+import liepy as su
 from itertools import permutations
 
 basis = su.gen_gellmann(3)

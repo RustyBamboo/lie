@@ -1,6 +1,6 @@
 #!python
 
-import su_genpy as su
+import liepy as su
 import numpy as np
 
 basis = su.gen_gellmann(3)
