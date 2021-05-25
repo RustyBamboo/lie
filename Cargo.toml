@@ -3,6 +3,9 @@ name = "lie"
 version = "0.1.0"
 authors = ["RustyBamboo <d@volya.xyz>"]
 edition = "2018"
+description = "A numerical library for working with Lie Groups and Algebras"
+license = "MIT"
+homepage = "https://github.com/RustyBamboo/lie"
 
 
 [build]
