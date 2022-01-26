@@ -25,7 +25,7 @@ A convenient way to work with this library is through the python bindings.
 
 ```python
 import liepy as lp
-su_algebra = lp.get_gellmann(3);
+su_algebra = lp.gen_gellmann(3)
 ```
 
 ### Building for yourself
