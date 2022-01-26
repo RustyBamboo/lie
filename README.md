@@ -2,13 +2,21 @@
 
 A numerical library for working with Lie Groups and Algebras.
 
-```rust
-    use lie::gellmann::*;
-    use lie::lie_algebra::*;
-    let su_algebra = get_gellmann(3);
-    let f = find_structure_constants(su_algebra); 
+Currently, this library was built for my studies in quantum mechanics and computing. At the moment, this means the primary focus are U and SU groups.
 
-    println!("{:?}", f);
+- [x] Generalized Gell-Mann Matrices (SU)
+- [x] Sylverster "Clock" and "Shift" Matrices
+- [x] su(n) matrices by "spin su(2) addition" via Clebsh-Gordan coefficients
+- [ ] other groups? SO(n)? Sp(n)? 
+
+
+```rust
+use lie::gellmann::*;
+use lie::lie_algebra::*;
+let su_algebra = get_gellmann(3);
+let f = find_structure_constants(su_algebra); 
+
+println!("{:?}", f);
 ```
 
 ## Python Bindings
@@ -16,8 +24,8 @@ A numerical library for working with Lie Groups and Algebras.
 A convenient way to work with this library is through the python bindings.
 
 ```python
-    import liepy as lp
-    su_algebra = lp.get_gellmann(3);
+import liepy as lp
+su_algebra = lp.get_gellmann(3);
 ```
 
 ### Building for yourself
