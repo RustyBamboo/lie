@@ -7,7 +7,6 @@ description = "A numerical library for working with Lie Groups and Algebras"
 license = "MIT"
 homepage = "https://github.com/RustyBamboo/lie"
 
-
 [build]
 rustdocflags = [ "--html-in-header", "./src/docs-header.html" ]
 
@@ -15,7 +14,7 @@ rustdocflags = [ "--html-in-header", "./src/docs-header.html" ]
 num-complex = "0.3.1"
 approx = {version = "0.4.0", features = ["num-complex"]}
 ndarray = {version = "0.14.0", features = ["approx"]}
-ndarray-linalg = { version = "0.13.1", features = ["openblas"] }
+ndarray-linalg = { version = "0.13.1", features = ["openblas-system"] }
 itertools = "0.10.0"
 
 
