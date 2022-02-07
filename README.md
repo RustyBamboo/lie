@@ -28,9 +28,15 @@ import liepy as lp
 su_algebra = lp.gen_gellmann(3)
 ```
 
+### Install
+
+Requires `openblas-devel`, e.g. (for Ubuntu/Debian `sudo apt install libopenblas-devel`) or equivalent. 
+
+```pip3 install liepy```
+
 ### Building for yourself
 
-The quickest way to install the python packages is through the following:
+For developers, the quickest way to install the python packages is through the following:
 
 > If changed Cargo.toml to use `openblas-system` (default) then install openblas (e.g. `sudo apt install libopenblas-dev`)
 
@@ -48,10 +54,6 @@ pip3 install target/wheels/liepy-....whl --force-reinstall
 where the path to the wheel file is filled out appropriately to the version python you have.
 
 ### Building for manylinux
-
-> WIP: manylinux and OpenBLAS not happy.
-
-This is for building a generic linux wheel, such as to publish on PyPi:
 
 ```
 cd lie
