@@ -68,6 +68,6 @@ mod tests {
 
         let basis = hermitian_basis_from_spin(1.);
         let x = find_structure_constants(&basis);
-        assert_eq!(x.len(), 23 * 2);
+        assert_eq!(x.len(), 25 * 2);
     }
 }

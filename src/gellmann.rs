@@ -42,7 +42,7 @@ pub fn gellmann(j: usize, k: usize, d: usize) -> nd::Array2<Complex64> {
 ///
 /// Returns a basis for su(d) via Generalized Gell-Mann matrices
 ///
-pub fn get_gellmann(d: usize) -> Vec<nd::Array2<Complex64>> {
+pub fn gen_gellmann(d: usize) -> Vec<nd::Array2<Complex64>> {
     let mut basis: Vec<nd::Array2<Complex64>> = Vec::with_capacity(d.pow(2));
 
     for j in 1..d + 1 {

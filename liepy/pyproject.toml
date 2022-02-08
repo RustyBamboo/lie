@@ -1,7 +1,7 @@
 [project]
 name = "liepy"
-dependencies = ["numpy~=1.19.0"]
-classifier = ["Intended Audience :: Science/Research", "License :: OSI Approved :: MIT License", "Programming Language :: Python", "Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.6", "Programming Language :: Python :: 3.7", "Programming Language :: Python :: 3.8", "Programming Language :: Python :: 3.9", "Programming Language :: Rust"]
+dependencies = ["numpy"]
+classifiers = ["Intended Audience :: Science/Research", "License :: OSI Approved :: MIT License", "Topic :: Scientific/Engineering :: Mathematics","Topic :: Scientific/Engineering :: Physics", "Programming Language :: Python", "Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.6", "Programming Language :: Python :: 3.7", "Programming Language :: Python :: 3.8", "Programming Language :: Python :: 3.9", "Programming Language :: Python :: 3.10", "Programming Language :: Rust"]
 
 [build-system]
 requires = ["maturin>=0.12"]

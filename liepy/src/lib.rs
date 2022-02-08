@@ -9,11 +9,15 @@ use lie::lie_algebra::{cross, dot, find_d_coefficients, find_structure_constants
 #[allow(unused_imports)]
 use lie::spherical::hermitian_basis_from_spin;
 
-use lie::gellmann::get_gellmann;
+use lie::gellmann::gen_gellmann;
 use lie::sylvester::gen_sylvester;
+
+use lie::su2::gen_su2;
+use lie::su2::gen_sl2;
 
 #[pymodule]
 fn liepy(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+    /// Generate matrix representation of su(d) via clock and shift
     #[pyfn(m, "gen_sylvester")]
     fn gen_sylvester_py<'py>(py: Python<'py>, d: usize) -> Vec<&'py PyArray2<Complex64>> {
         let basis = gen_sylvester(d);
@@ -22,14 +26,32 @@ fn liepy(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
         basis
     }
 
+    /// Generate matrix representation of su(d) via Generalized Gellmann method
     #[pyfn(m, "gen_gellmann")]
     fn gen_gellmann_py<'py>(py: Python<'py>, d: usize) -> Vec<&'py PyArray2<Complex64>> {
-        let basis = get_gellmann(d);
+        let basis = gen_gellmann(d);
         let basis: Vec<&PyArray2<Complex64>> = basis.iter().map(|x| x.to_pyarray(py)).collect();
 
         basis
     }
+    
+    /// Generate matrix representation of su(2) for spin j
+    #[pyfn(m, "gen_su2")]
+    fn gen_su_py<'py>(py: Python<'py>, j: f64) -> Vec<&'py PyArray2<Complex64>> {
+        let basis: Vec<&PyArray2<Complex64>> = gen_su2(j).iter().map(|x| x.to_pyarray(py)).collect();
 
+        basis
+    }
+
+    /// Generate matrix representation of sl(2) for spin j
+    #[pyfn(m, "gen_sl2")]
+    fn gen_sl_py<'py>(py: Python<'py>, j: f64) -> Vec<&'py PyArray2<f64>> {
+        let basis: Vec<&PyArray2<f64>> = gen_sl2(j).iter().map(|x| x.to_pyarray(py)).collect();
+
+        basis
+    }
+
+    /// Find the commutation coefficients for matrices in su(d)
     #[pyfn(m, "get_structure_constants")]
     fn get_structure_constants_py<'py>(
         _py: Python<'py>,
@@ -43,6 +65,7 @@ fn liepy(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
         struct_consts
     }
 
+    /// Find the anti-commutation coefficients for matrices in su(d)
     #[pyfn(m, "get_d_coefficients")]
     fn get_d_coefficients_py<'py>(
         _py: Python<'py>,
@@ -56,6 +79,7 @@ fn liepy(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
         struct_consts
     }
 
+    /// Find the commutation result of two matrices, given the structure constants
     #[pyfn(m, "su_commutator")]
     fn su_commutator_py<'py>(
         py: Python<'py>,
@@ -76,6 +100,7 @@ fn liepy(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
         res.to_pyarray(py)
     }
 
+    /// Compute the cross-product of two matrices of su(d), given the structure constants
     #[pyfn(m, "cross")]
     fn cross_py<'py>(
         py: Python<'py>,
@@ -92,6 +117,7 @@ fn liepy(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
         res.to_pyarray(py)
     }
 
+    /// Compute the dot-product of two matrices of su(d), given the structure constants
     #[pyfn(m, "dot")]
     fn dot_py<'py>(
         py: Python<'py>,

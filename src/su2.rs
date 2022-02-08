@@ -59,3 +59,21 @@ pub fn s_x(j: f64) -> nd::Array2<f64> {
 pub fn s_y(j: f64) -> nd::Array2<f64> {
     (j_p(j) - j_m(j)) * 0.5
 }
+
+use num_complex::Complex64;
+/// Returns matrix representations of s_z, s_x, s_y for spin j
+/// For convenience, these matrices are returned as Complex
+pub fn gen_su2(j: f64) -> [nd::Array2<Complex64>; 3] {
+    let _i = Complex64::new(0., 1.);
+    let _1 = Complex64::new(1., 0.);
+
+    let s_z = s_z(j).map(|&x| Complex64::new(x, 0.));
+    let s_x = s_x(j).map(|&x| Complex64::new(x, 0.));
+    let s_y = s_y(j).map(|&x| Complex64::new(x, 0.));
+    [s_z, s_x, s_y]
+}
+
+/// Returns matrix representations of diagonal s_z, raising and lowering operators s_+, s_-
+pub fn gen_sl2(j: f64) -> [nd::Array2<f64>; 3] {
+    [s_z(j), j_p(j), j_m(j)]
+}
