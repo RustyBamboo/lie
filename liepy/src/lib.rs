@@ -5,15 +5,17 @@ use numpy::{PyArray2, PyReadonlyArray2, ToPyArray};
 use pyo3::prelude::{pymodule, PyModule, PyResult, Python};
 
 #[allow(unused_imports)]
-use lie::lie_algebra::{cross, dot, find_d_coefficients, find_structure_constants, su_commutator};
+use lie::lie_algebra::{
+    cross, dot, find_d_coefficients, find_structure_constants, su_anticommutator, su_commutator,
+};
 #[allow(unused_imports)]
 use lie::spherical::hermitian_basis_from_spin;
 
 use lie::gellmann::gen_gellmann;
 use lie::sylvester::gen_sylvester;
 
-use lie::su2::gen_su2;
 use lie::su2::gen_sl2;
+use lie::su2::gen_su2;
 
 #[pymodule]
 fn liepy(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
@@ -34,11 +36,12 @@ fn liepy(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
 
         basis
     }
-    
+
     /// Generate matrix representation of su(2) for spin j
     #[pyfn(m, "gen_su2")]
     fn gen_su_py<'py>(py: Python<'py>, j: f64) -> Vec<&'py PyArray2<Complex64>> {
-        let basis: Vec<&PyArray2<Complex64>> = gen_su2(j).iter().map(|x| x.to_pyarray(py)).collect();
+        let basis: Vec<&PyArray2<Complex64>> =
+            gen_su2(j).iter().map(|x| x.to_pyarray(py)).collect();
 
         basis
     }
@@ -70,7 +73,7 @@ fn liepy(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     fn get_d_coefficients_py<'py>(
         _py: Python<'py>,
         basis: Vec<PyReadonlyArray2<'py, Complex64>>,
-    ) -> std::collections::HashMap<(usize, usize, usize), Complex64> {
+    ) -> std::collections::HashMap<(usize, usize), (usize, Complex64)> {
         let basis: Vec<nd::Array2<Complex64>> =
             basis.iter().map(|x| x.as_array().to_owned()).collect();
 
@@ -100,6 +103,27 @@ fn liepy(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
         res.to_pyarray(py)
     }
 
+    /// Find the anticommutation result of two matrices, given the structure constants
+    #[pyfn(m, "su_anticommutator")]
+    fn su_anticommutator_py<'py>(
+        py: Python<'py>,
+        l_a: PyReadonlyArray2<'py, Complex64>,
+        l_b: PyReadonlyArray2<'py, Complex64>,
+        d_ijk: std::collections::HashMap<(usize, usize), (usize, Complex64)>,
+        basis: Vec<PyReadonlyArray2<'py, Complex64>>,
+    ) -> &'py PyArray2<Complex64> {
+        let basis: Vec<nd::Array2<Complex64>> =
+            basis.iter().map(|x| x.as_array().to_owned()).collect();
+        let res = su_anticommutator(
+            &l_a.as_array().to_owned(),
+            &l_b.as_array().to_owned(),
+            &d_ijk,
+            basis.as_slice(),
+        );
+
+        res.to_pyarray(py)
+    }
+
     /// Compute the cross-product of two matrices of su(d), given the structure constants
     #[pyfn(m, "cross")]
     fn cross_py<'py>(
@@ -123,7 +147,7 @@ fn liepy(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
         py: Python<'py>,
         l_a: PyReadonlyArray2<'py, Complex64>,
         l_b: PyReadonlyArray2<'py, Complex64>,
-        f_ijk: std::collections::HashMap<(usize, usize, usize), Complex64>,
+        f_ijk: std::collections::HashMap<(usize, usize), (usize, Complex64)>,
     ) -> &'py PyArray2<Complex64> {
         let res = dot(
             &l_a.as_array().to_owned(),

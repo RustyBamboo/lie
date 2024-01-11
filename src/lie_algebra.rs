@@ -73,7 +73,7 @@ pub fn find_structure_constants(
     struct_consts
 }
 
-pub fn find_d_coefficients(basis: &[nd::Array2<c64>]) -> HashMap<(usize, usize, usize), c64> {
+pub fn find_d_coefficients(basis: &[nd::Array2<c64>]) -> HashMap<(usize, usize), (usize, c64)> {
     use approx::AbsDiffEq;
     use std::iter::FromIterator;
 
@@ -99,9 +99,9 @@ pub fn find_d_coefficients(basis: &[nd::Array2<c64>]) -> HashMap<(usize, usize, 
         for (j, t_b) in basis.iter().enumerate() {
             let mut f_t_c = anti_commutator(t_a, t_b);
 
-            if i == j {
-                f_t_c = f_t_c - &eye / c64::new(n_dim as f64, 0.);
-            }
+            // if i == j {
+            // f_t_c = f_t_c - &eye / c64::new(n_dim as f64, 0.);
+            // }
 
             let f_t_c = nd::Array::from_iter(f_t_c.iter().cloned());
 
@@ -112,11 +112,17 @@ pub fn find_d_coefficients(basis: &[nd::Array2<c64>]) -> HashMap<(usize, usize, 
 
             let idx = x.iter().map(|x| x.abs_diff_ne(&c64::new(0., 0.), 1e-8));
 
-            for (c, val) in idx.clone().into_iter().enumerate() {
-                if val {
-                    struct_consts.insert((i, j, c), x[c] / c64::new(2., 0.));
-                }
+            let idx = idx.into_iter().position(|x| x);
+
+            if let Some(idx) = idx {
+                struct_consts.insert((i, j), (idx, x[idx]));
             }
+
+            // for (c, val) in idx.clone().into_iter().enumerate() {
+            //     if val {
+            //         struct_consts.insert((i, j, c), x[c]);
+            //     }
+            // }
         }
     }
 
@@ -144,6 +150,41 @@ pub fn su_commutator(
     for (i_i, l_i) in l_a.iter().enumerate() {
         for (i_j, l_j) in l_b.iter().enumerate() {
             let (i_k, f) = match f_ijk.get(&(i_i, i_j)) {
+                Some(x) => x,
+                None => continue,
+            };
+            let coeff = l_i * l_j * f;
+
+            if coeff.abs() > 1e-8 {
+                let prod = coeff * basis.get(*i_k).unwrap();
+                res = res + prod;
+            }
+        }
+    }
+    res
+}
+
+///
+/// Assume a vector space for the su lie algebra, with a vector being defined by the basis. Find
+/// what the commutator is using the coordinates of two matrices defined on the basis.
+/// l_a: coordinates of first matrix
+/// l_b: coordinates of second matrix
+/// f_ijk: structure constants for the lie algebra
+/// basis: the vector basis for the lie algebra
+///
+/// returns the commutator result [l_a, l_b]
+///
+pub fn su_anticommutator(
+    l_a: &ndarray::Array2<c64>,
+    l_b: &ndarray::Array2<c64>,
+    d_ijk: &HashMap<(usize, usize), (usize, c64)>,
+    basis: &[nd::Array2<c64>],
+) -> nd::Array2<c64> {
+    let n_dim = basis[0].shape()[0];
+    let mut res: nd::Array2<c64> = nd::Array2::zeros((n_dim, n_dim));
+    for (i_i, l_i) in l_a.iter().enumerate() {
+        for (i_j, l_j) in l_b.iter().enumerate() {
+            let (i_k, f) = match d_ijk.get(&(i_i, i_j)) {
                 Some(x) => x,
                 None => continue,
             };
@@ -186,25 +227,22 @@ pub fn cross(
 pub fn dot(
     l_a: &ndarray::Array2<c64>,
     l_b: &ndarray::Array2<c64>,
-    d_ijk: &HashMap<(usize, usize, usize), c64>,
+    d_ijk: &HashMap<(usize, usize), (usize, c64)>,
 ) -> nd::Array2<c64> {
     let n_dim = l_a.shape()[0];
     let mut res: nd::Array2<c64> = nd::Array2::zeros((l_a.shape()[0], l_a.shape()[1]));
     for (i_i, l_i) in l_a.iter().enumerate() {
         for (i_j, l_j) in l_b.iter().enumerate() {
             for k in 0..n_dim {
-                let perms = vec![i_i, i_j, k].into_iter().permutations(3);
-
-                for perm in perms {
-                    let key = (perm[0], perm[1], perm[2]);
-                    match d_ijk.get(&key) {
-                        Some(d) => {
-                            res[[k, 0]] += d * l_i * l_j;
-                            break;
-                        }
-                        None => continue,
-                    };
+                let (i_k, f) = match d_ijk.get(&(i_i, i_j)) {
+                    Some(x) => x,
+                    None => continue,
+                };
+                if k != *i_k {
+                    continue;
                 }
+
+                res[[k, 0]] += f * l_i * l_j;
             }
         }
     }
